@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: ckubernetesapp 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ckubernetesapp
+  template:
+    metadata:
+      labels:
+        app: ckubernetesapp 
+    spec:
+      containers:
+        - name: ckubernetesapp 
+          image: rc5registry.azurecr.io/ckubernetesapp
+          ports:
+          - containerPort: 8080
