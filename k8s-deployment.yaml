@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-app-deploy
+  labels:
+    app: dotnet-app
+spec:
+  replicas: 2 # Mantendremos 2 pods para alta disponibilidad
+  selector:
+    matchLabels:
+      app: dotnet-app
+  template:
+    metadata:
+      labels:
+        app: dotnet-app
+    spec:
+      containers:
+      - name: dotnet-app-container
+        # IMPORTANTE: Usamos el nombre del contenedor del registro que configuraste
+        image: 'docker-hub-local:5000/poc-netcore:latest'
+        ports:
+        - containerPort: 80 # Puerto interno de la app .NET
+        imagePullPolicy: Always # Obliga a K8s a bajar la imagen nueva siempre
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dotnet-app-service
+spec:
+  type: LoadBalancer # Para que puedas acceder desde afuera de Minikube
+  selector:
+    app: dotnet-app
+  ports:
+    - protocol: TCP
+      port: 80       # Puerto del servicio
+      targetPort: 8080 # Puerto del contenedor
+      nodePort: 30080 # Podrás entrar via http://IP-MINIKUBE:30080
